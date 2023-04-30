@@ -1,0 +1,1 @@
+C:\MSVS\Projects\CPP-search-server\x64\Debug\CPP-search-server.exe
