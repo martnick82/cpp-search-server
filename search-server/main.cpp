@@ -1,5 +1,3 @@
-
-
 #include <iostream>
 #include <algorithm>
 #include <cassert>
@@ -72,7 +70,7 @@ void AssertEqualImpl(const T& t, const U& u, const string& t_str, const string& 
         cerr << boolalpha;
         cerr << file << "("s << line << "): "s << func << ": "s;
         cerr << "ASSERT_EQUAL("s << t_str << ", "s << u_str << ") failed: "s;
-        cerr << t  << " != "s << u << "."s;
+        cerr << t << " != "s << u << "."s;
         if (!hint.empty()) {
             cerr << " Hint: "s << hint;
         }
@@ -467,10 +465,34 @@ void TestDocumentMatching()
 
 }
 //Сортировка найденных документов по релевантности. Возвращаемые при поиске документов результаты должны быть отсортированы в порядке убывания релевантности.
-/*void TestSortByRelivance()
+void TestSortByRelivance()
 {
-    //смотри TestRelevanceSearchihgDocuments()
-}*/
+    SearchServer search_server;
+        search_server.SetStopWords("и о в по на in the"s);
+    search_server.AddDocument(0, "белый кот и модный ошейник"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.AddDocument(1, "пушистый кот пушистый хвост чёрный"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.AddDocument(2, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.AddDocument(3, "ухоженный скворец евгений"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.AddDocument(4, "коварный кот точит когти о ножку стола"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.AddDocument(5, "лохматый пёс громко лает на английском языке"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.AddDocument(6, "огромный чёрный кот починяет примус насвистывая мелодию"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.AddDocument(7, "днем и ночью кот ученый всё ходит по цепи кругом"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.AddDocument(8, "куда летит скворец пёс его знает"s, DocumentStatus::ACTUAL, { 1 });
+
+// Угадайте, кого мы будем искать? :) Ищем котов с разной релевантностью, но строго ранжированных )
+    {
+        const auto found_docs = search_server.FindTopDocuments("кот"s);
+        ASSERT_EQUAL(found_docs.size(), 5);
+        double relevance = found_docs[0].relevance;
+        for (const Document& doc : found_docs)
+        {
+            ASSERT(doc.relevance <= relevance);
+            relevance = doc.relevance;
+        }
+
+    }
+
+}
 //Вычисление рейтинга документов. Рейтинг добавленного документа равен среднему арифметическому оценок документа.
 void TestDocumentRatingCalculation()
 {
@@ -487,8 +509,19 @@ void TestDocumentRatingCalculation()
         const Document& doc1 = found_docs[1];
         ASSERT_EQUAL(doc0.id, 1);
         ASSERT_EQUAL(doc1.id, 0);
-        ASSERT(abs(doc0.rating - 5) < 1e-6);
-        ASSERT(abs(doc1.rating - 2) < 1e-6);
+        //  Замечание:
+        //  Рейтинг имеет целочисленный тип, поэтому их лучше сравнивать на точное равенство.
+        //  Лучше использовать числовые формулы вида(1 + 2 + 3) / 3 вместо точных значений.
+        //  Таким образом мы покажем каким образом были на самом деле получены данные значения, 
+        //  что облегчит понимание теста для читателя.
+        //     ASSERT(abs(doc0.rating - 5) < 1e-6);
+        //     ASSERT(abs(doc1.rating - 2) < 1e-6);
+
+    // Совсем забыл, что рейтинг у нас целочисленный, помню, что считается, 
+    // как среднее значение, поэтому работал с ним, как с double. 
+    // По поводу прозрачности проверок для человека понял, учту.
+        ASSERT_EQUAL(doc0.rating, ((7 + 2 + 7) / 3)); // Проверяем расчёт рейтинга, как среднее целочисленное из оценок
+        ASSERT_EQUAL(doc1.rating, ((8 - 3) / 2));    // Проверяем расчёт рейтинга, как среднее целочисленное из оценок
     }
 }
 //Фильтрация результатов поиска с использованием предиката, задаваемого пользователем.
@@ -558,26 +591,34 @@ void TestRelevanceSearchihgDocuments()
 {
     // Create test server
     SearchServer search_server;
-    search_server.SetStopWords("is are was a an in the with near at"s);
-    search_server.AddDocument(0, "a colorful parrot with green wings and red tail is lost"s, DocumentStatus::ACTUAL, { 1, 1 });
-    search_server.AddDocument(1, "a grey hound with black ears is found at the railway station"s, DocumentStatus::ACTUAL, { 1, 1, 1 });
-    search_server.AddDocument(2, "a white cat with long furry tail is found near the red square"s, DocumentStatus::ACTUAL, { 1, 1, 1, 1 });
-    search_server.AddDocument(3, "ухоженный скворец евгений"s, DocumentStatus::ACTUAL, { 1 });
+    search_server.SetStopWords("и в на in the"s);
+    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(1, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(2, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    search_server.AddDocument(3, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
 
     // проверяем ранжирование и расчёт по релевантности
     {
-        const auto found_docs = search_server.FindTopDocuments("white cat long tail"s);
+        const auto found_docs = search_server.FindTopDocuments("кот"s);
         ASSERT_EQUAL(found_docs.size(), 2);
         const Document& doc0 = found_docs[0];
         const Document& doc1 = found_docs[1];
-        ASSERT_EQUAL(doc0.id, 2);
+        ASSERT_EQUAL(doc0.id, 1);
         ASSERT_EQUAL(doc1.id, 0);
-        ASSERT(abs(doc0.relevance - 0.606503783) < 1e-6);
-        ASSERT(abs(doc1.relevance - 0.086643398) < 1e-6);
-    }
+        // Замечание:
+        // Лучше использовать числовые формулы вида(log(server.GetDocumentCount() * 1.0 / 1) * (2.0 / 3))) 
+        // вместо точных значений для релевантности.
+        //  Это покажет каким образом были получены данные значения, потому что, если тест провалится, 
+        //  (будет просто видно, что числа различаются), тогда как числовые формулы покажут, 
+        //  как автор теста вычислял эти значения, что поможет разобраться, где вычисления отличаются.
+        //ASSERT(abs(doc0.relevance - 0.606503783) < 1e-6);
+        //ASSERT(abs(doc1.relevance - 0.086643398) < 1e-6);
+
+        ASSERT(abs(doc0.relevance - log(search_server.GetDocumentCount() * 1.0 / 2) * (1.0 / 4)) < 1e-6);
+        ASSERT(abs(doc1.relevance - log(search_server.GetDocumentCount() * 1.0 / 2) * (1.0 / 5)) < 1e-6);    }
+
 
 }
-
 
 template <typename FunctionName>
 void RunTestImpl(FunctionName function, const string& str_function)
@@ -586,16 +627,27 @@ void RunTestImpl(FunctionName function, const string& str_function)
     cerr << str_function << " OK" << endl;
 }
 
-#define RUN_TEST(func) RunTestImpl(func, #func)
+#define RUN_TEST(func) RunTestImpl(func, #func) //макрос для запуска функций тестирования
 
 // Функция TestSearchServer является точкой входа для запуска тестов
 void TestSearchServer() {
     RUN_TEST(TestExcludeStopWordsFromAddedDocumentContent);
-    // Не забудьте вызывать остальные тесты здесь
     RUN_TEST(TestDocumentSearching);
     RUN_TEST(TestMinusWords);
     RUN_TEST(TestDocumentMatching);
-//  RUN_TEST(TestSortByRelivance); проверяется функцией TestRelevanceSearchihgDocuments
+    // Замечание:
+    // Двух элементов объективно не хватает для того, чтобы адекватно оценивать то, 
+    // что последовательность является отсортированной.Лучше иметь больше.
+    // Также подсчёт релевантности и отсортированность результата по релевантности - 
+    // различный функционал и для них стоит иметь два различных теста.
+    // Функционал сортировки просто использует релевантность, но при этом никак не влияет на её подсчёт.
+    // Также в тесте нужно сравнивать не на точные значения, а именно то, 
+    // что значения отсортированы в невозрастающем порядке(то есть сравнивать релевантность соседних элементов).
+    // RUN_TEST(TestSortByRelivance); проверяется функцией TestRelevanceSearchihgDocuments
+
+    // Реализовал проверку сортировки по реливантности с пятью документами:
+    RUN_TEST(TestSortByRelivance);
+
     RUN_TEST(TestDocumentRatingCalculation);
     RUN_TEST(TestPredicateFunction);
     RUN_TEST(TestSearchingDocumentByStatus);
@@ -603,7 +655,8 @@ void TestSearchServer() {
 }
 
 // --------- Окончание модульных тестов поисковой системы -----------
-
+// 
+// Спасибо, что дочитали до этого места. Благодарю за конструктивные замечания!
 int main() {
     TestSearchServer();
     // Если вы видите эту строку, значит все тесты прошли успешно
