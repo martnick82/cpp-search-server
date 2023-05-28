@@ -1,3 +1,5 @@
+
+
 #include <iostream>
 #include <algorithm>
 #include <cassert>
@@ -105,39 +107,22 @@ const double DOUBLE_ACCURACY = 1e-6;
 
 //    -------------------- Реализация SearchServer --------------------
 
-vector<string> SplitIntoWords(const string& text) {
-    vector<string> words;
-    string word;
-    for (const char c : text) {
-        if (c == ' ') {
-            if (!word.empty()) {
-                words.push_back(word);
-                word.clear();
-            }
-        }
-        else {
-            word += c;
-        }
-    }
-    if (!word.empty()) {
-        words.push_back(word);
-    }
 
-    return words;
-}
 
-struct Document {
-    Document() : id(0), relevance(0.0), rating(0) {};
+struct Document 
+{
+    Document() : id(0), relevance(0.0), rating(0) {}
 
     Document(int ID, double rel, int rate)
-        : id(ID), relevance(rel), rating(rate) {};
+        : id(ID), relevance(rel), rating(rate) {}
 
     int id;
     double relevance;
     int rating;
 };
 
-enum class DocumentStatus {
+enum class DocumentStatus 
+{
     ACTUAL,
     IRRELEVANT,
     BANNED,
@@ -166,69 +151,92 @@ ostream& operator<<(ostream& os, DocumentStatus status)
 }
 
 
-class SearchServer {
+class SearchServer 
+{
 public:
     template <typename StopWords>
-    explicit SearchServer(StopWords stop_words)
+    explicit SearchServer(const StopWords& stop_words)
     {
- //    if (stop_words.empty())
- //       throw invalid_argument("Empty container with stop-words"s);
         for (const string& word : stop_words)
         {
+ //     Уточнение:       даже одну операцию стоит обрамлять в фигурные скобки https ://habr.com/ru/articles/61323/
+//      Пояснение: Спасибо. с интересом прочёл. Понял, что единого мнения на этот счёт нет. 
+//      Такие замечания очень ценны на мой взгляд. А за ссылку отдельное спасибо!
+//      Здесь я всё не поправлю, но постараюсь следовать в дальнейшем
                 if (word.empty() || !IsValidWord(word))
+                {
                     throw invalid_argument("Invalid stop-word"s);
+                }
                 stop_words_.insert(word);
         }
     }
+//  Уточнение: метод SplitIntoWords формирует контейнер слов, с которым работает шаблонный конструктор, 
+//  можно делегировать работу ему через список инициализации
 
+ // Пояснение: Не помню такой информации в теории. Благодаря вашему замечанию поискал, и реализовал так:
     explicit SearchServer(const string& raw_stop_words)
-    {        
-        if (!IsValidWord(raw_stop_words))
-            throw invalid_argument("Invalid string with stop-words"s);
+        : SearchServer(SplitIntoWords(raw_stop_words)) {}
 
-        vector<string> stop_words = SplitIntoWords(raw_stop_words);
-
-      //if (stop_words.empty())
-      //   throw invalid_argument("Invalid string with stop-words. The Search Server failed convert stop-words string"s);
-        for (const string& word : stop_words)
-        {                
-            stop_words_.insert(word);
-        }        
-    }
+//  Так конечно намного лучше. Моя предыдущая реализация мне самому не нравилась из-за дублирования кода, 
+//  но не получилось у меня реализовать имеющимися знаниями, наверное где-то я упустил, 
+//  что можно прям целые функции в список инициализации записывать. 
+//  Даже непонятно было, чем список инициализации лучше, чем значения полей по-умолчанию, 
+//  так как примеры в теории на простых данных приведены.
        
     void AddDocument(int document_id, const string& document, DocumentStatus status,
         const vector<int>& ratings) 
-    {
-        if (!IsValidWord(document)) 
-            throw invalid_argument("Invalid document string"s);
+    {        
         if  (document_id < 0)
+        {
             throw invalid_argument("Invalid document ID"s);
+        }
         if (IsDocumentID(document_id))
-            throw invalid_argument("Document ID is already exist"s);            
-        const vector<string> words = SplitIntoWordsNoStop(document);
+        {
+            throw invalid_argument("Document ID is already exist"s);
+        }
+        try {
+            const vector<string> words = SplitIntoWordsNoStop(document);        
+        
         const double inv_word_count = 1.0 / words.size();
-        for (const string& word : words) {
+        for (const string& word : words) 
+        {
             word_to_document_freqs_[word][document_id] += inv_word_count;
         }
-        documents_.emplace(document_id, DocumentData(ComputeAverageRating(ratings), status));        
-    }
+        documents_.emplace(document_id, DocumentData(ComputeAverageRating(ratings), status));   
 
+        // Переменная для хранения последовательности добавления документов, пояснения ниже
+        document_id_chain_.push_back(document_id);
+        }
+        catch (invalid_argument& error)
+        {
+            throw invalid_argument("SplitIntoWordsNoStop :: "s + error.what());
+        }
+    }
+   
     //Проверка строки на отсутствие спецсимволов и корректность дефисов
     static bool IsValidWord(const string& text)
     {
         char previous_char = ' ';
         if (text.size() == 1 && text == "-")
+        {
             return false;
+        }
         for (const char& ch : text)
         {
             if (!IsValidChar(ch))
+            {
                 return false;
+            }
             if ((ch == '-' && previous_char == '-') || (ch == ' ' && previous_char == '-'))
+            {
                 return false;
+            }
             previous_char = ch;
         }
         if (previous_char == '-')
+        {
             return false;
+        }
         return true;
     }
     static bool IsValidChar(const char& c)
@@ -236,49 +244,112 @@ public:
         return !(c >= '\0' && c < ' ');
     }
 
-    vector<Document> FindTopDocuments(const string& raw_query) const {
+    vector<Document> FindTopDocuments(const string& raw_query) const 
+    {
         return  FindTopDocuments(raw_query, []([[maybe_unused]] int document_id, 
-            DocumentStatus status, [[maybe_unused]] int rating) {
-            return status == DocumentStatus::ACTUAL; });
+            DocumentStatus status, [[maybe_unused]] int rating) 
+            {
+            return status == DocumentStatus::ACTUAL; 
+            });
     }
 
+    static vector<string> SplitIntoWords(const string& text) 
+    {
+        vector<string> words;
+        string word;
+        if (!IsValidWord(text))
+        {
+            throw invalid_argument("Invalid argument."s);
+        }
+        for (const char c : text) 
+        {
+            if (c == ' ') 
+            {
+                if (!word.empty()) 
+                {
+                    words.push_back(word);
+                    word.clear();
+                }
+            }
+            else 
+            {
+                word += c;
+            }
+        }
+        if (!word.empty()) 
+        {
+            words.push_back(word);
+        }
+
+        return words;
+    }
+
+
     vector<Document> FindTopDocuments(const string& raw_query,
-        DocumentStatus status) const {
+        DocumentStatus status) const 
+    {
         return  FindTopDocuments(raw_query, [status]([[maybe_unused]] int document_id, 
-            DocumentStatus doc_status, [[maybe_unused]] int rating) {
-            return status == doc_status; });
+            DocumentStatus doc_status, [[maybe_unused]] int rating) 
+            {
+            return status == doc_status; 
+            });
     }
 
     template <typename Filtr>
     vector<Document> FindTopDocuments(const string& raw_query,
         Filtr filtr) const 
     {
-        if (!IsValidWord(raw_query) || raw_query.empty())
-            throw invalid_argument("Invalid query"s);
-        Query query = ParseQuery(raw_query);
-        auto matched_documents = FindAllDocuments(query, filtr);
-        sort(matched_documents.begin(), matched_documents.end(),
-            [](const Document& lhs, const Document& rhs) {
-                if (abs(lhs.relevance - rhs.relevance) < DOUBLE_ACCURACY) {
-                    return lhs.rating > rhs.rating;
-                }
-                else {
-                    return lhs.relevance > rhs.relevance;
-                }
-            });
-        if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT) {
-            matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
+//Замечание:   каждый раз перед парсингом запроса делаете проверку - 
+//       можно перенести вовнутрь метода и не будет этого дублирования
+//Пояснение: Проверку IsValidWord перенёс в метод SplitIntoWords и обработку исключений протащил наружу
+        try {            
+            Query query = ParseQuery(raw_query);
+            auto matched_documents = FindAllDocuments(query, filtr);
+            sort(matched_documents.begin(), matched_documents.end(),
+                [](const Document& lhs, const Document& rhs) 
+                {
+                    if (abs(lhs.relevance - rhs.relevance) < DOUBLE_ACCURACY) 
+                    {
+                        return lhs.rating > rhs.rating;
+                    }
+                    else {
+                        return lhs.relevance > rhs.relevance;
+                    }
+                });
+            if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT) 
+            {
+                matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
+            }
+            return matched_documents;
         }
-        return matched_documents;
+        catch (invalid_argument& error) 
+        {
+            throw  invalid_argument("ParseQuery :: "s + error.what());
+        }
     }
 
-    int GetDocumentId(const int index) const
+ /*   int GetDocumentId(const int index) const
     {
-        int id = INVALID_DOCUMENT_ID, inc = 0;
+ // Замечание:       не надо в одну строку размещать переменные и присваивать друг друга,
+ //       int id = INVALID_DOCUMENT_ID, inc = 0;
+    Пояснение: Понял. Читаемость хуже.
+        int id = -1; 
+        int inc = 0;
         if (index >= static_cast<int>(documents_.size()))
             throw out_of_range("Document ID out of range"s);
         if (index < 0)
             throw out_of_range("Document ID is negative"s);
+//  Замечание: словарь упорядочивает значения, а значит не будет работать при неупорядоченном добавлении.
+//  вам надо еще один контейнер для хранения идентификаторов в порядке добавления
+
+//  Пояснение: В задании сказано было следующее: 
+//  "Также добавьте метод GetDocumentId, позволяющий получить идентификатор документа по его порядковому номеру."
+//  Не пояснялось, что это номер в порядке добавления документов, поэтому я реализовал поиск по порядку в словаре,
+//  Тестирование в тренажёре прошло, так что я полагал, что решил задание верно, исходя из того, 
+//  что, вероятно, тесты учитывают логику задания. Соответственно ниже в функции TestGetDocumentId(), проверялась
+//  именно такая логика, что документы сортируются по ID вне зависимости от порядка их добавления.
+//  Но пока я только учусь, так что, раз есть замечание, то буду переделывать. Тяжело в учении, легко на работе :)
+
         for (const auto& [doc_id, data] : documents_)
         {
             if (inc == index)
@@ -289,6 +360,15 @@ public:
             ++inc;
         }
         return id;
+    } */
+//Новый вариант:
+    int GetDocumentId(const int index) const
+    {
+        if (index >= static_cast<int>(documents_.size()))
+            throw out_of_range("Document ID out of range"s);
+        if (index < 0)
+            throw out_of_range("Document ID is negative"s);
+        return document_id_chain_[index]; //считаем порядок добавления от 0
     }
 
     int GetDocumentCount() const {
@@ -296,51 +376,109 @@ public:
     }
 
     tuple<vector<string>, DocumentStatus> MatchDocument(const string& raw_query,
-        int document_id) const 
-    {
-        if (!IsValidWord(raw_query))
-            throw invalid_argument("Invalid query"s);
-        if (document_id < 0)
-            throw invalid_argument("Invalid document ID"s);
-        if (!IsDocumentID(document_id))
-            throw invalid_argument("Non existing document ID"s);
-        const Query query = ParseQuery(raw_query);
-        vector<string> matched_words;
-        for (const string& word : query.plus_words) {
-            if (word_to_document_freqs_.count(word) == 0) {
-                continue;
+        int document_id) const    
+    {        
+//  Замечание:    в матчинге уже не надо проверять идентификаторы
+//        if (document_id < 0)
+//           throw invalid_argument("Invalid document ID"s);
+//        if (!IsDocumentID(document_id))
+//            throw invalid_argument("Non existing document ID"s);
+//  Пояснение: убрать не сложно. Интересно почему в матчинге не обязательно проверять входные данные?
+//  Исходил из того, что есть функция, которая принимает параметры, от которых зависит работа функции, 
+//  поэтому для стабильности работы было бы неплохо эти параметры проверить. Так, без проверки, 
+//  в дальнейшем возможна попытка обращения по невалидному ID
+            try {
+                const Query query = ParseQuery(raw_query);
+                vector<string> matched_words;
+                for (const string& word : query.plus_words) 
+                {
+                    if (word_to_document_freqs_.count(word) == 0) 
+                    {
+                        continue;
+                    }
+                    if (word_to_document_freqs_.at(word).count(document_id)) 
+                    {
+                        matched_words.push_back(word);
+                    }
+                }
+                for (const string& word : query.minus_words) 
+                {
+                    if (word_to_document_freqs_.count(word) == 0) 
+                    {
+                        continue;
+                    }
+                    if (word_to_document_freqs_.at(word).count(document_id)) 
+                    {
+                        matched_words.clear();
+                        break;
+                    }
+                }
+                return tie(matched_words, documents_.at(document_id).status);
             }
-            if (word_to_document_freqs_.at(word).count(document_id)) {
-                matched_words.push_back(word);
+            catch (invalid_argument& error) {
+                throw  invalid_argument("ParseQuery :: "s + error.what());
             }
-        }
-        for (const string& word : query.minus_words) {
-            if (word_to_document_freqs_.count(word) == 0) {
-                continue;
-            }
-            if (word_to_document_freqs_.at(word).count(document_id)) {
-                matched_words.clear();
-                break;
-            }
-        }
-        return tie( matched_words, documents_.at(document_id).status );
     }
-
-    const static int INVALID_DOCUMENT_ID = -1;
+//  Уточнение:    вам надо обойтись уже без этой переменной
+//    const static int INVALID_DOCUMENT_ID = -1;
+//  Пояснение: Да, согласен. Убрал в данной реализации. Я видел это, просто оставил на память о предыдущих уроках :)
 
 private:
-    struct DocumentData {
+    struct DocumentData 
+    {
         DocumentData() : rating(0), status(DocumentStatus::ACTUAL) {};
         DocumentData(int rate, DocumentStatus status)
             : rating(rate), status(status) {};
         int rating;
         DocumentStatus status;
     };
+/* Пояснение: Пока я не очень понимаю назначение функции int GetDocumentId(const int index), то реализую замечание,
+* касающееся её так, чтобы наименьшим образом затрагивать структуру сервера. Если не рассматривать это моё замечание,
+* то сделал бы так:
+* 
+* чтобы не плодить новых переменных, я бы ввёл ещё одно поле в
+* struct DocumentData {
+        ...
+        int chain_link; // номер документа в порядке его добавления на сервер
+    };
+
+    Тогда в функции AddDocument изменяется одна строка:
+* ...
+* void AddDocument(int document_id, const string& document, DocumentStatus status,
+        const vector<int>& ratings) {
+        ...
+        documents_.emplace(document_id, DocumentData(ComputeAverageRating(ratings), status, GetDocumentCount()+1));   
+        ...
+    }
+    ...
+    Поиск номера был бы таким:
+     int GetDocumentId(const int index) const
+    {            
+        int id = -1;
+        if (index >= static_cast<int>(documents_.size()))
+            throw out_of_range("Document ID out of range"s);
+        if (index < 0)
+            throw out_of_range("Document ID is negative"s);
+        for (const auto& [doc_id, data] : documents_)
+        {
+            if (data.chain_link == index)
+            {
+                id = doc_id;
+                break;
+            }           
+        }
+        return id;
+    } // Извините, из-за нехватки времени не проверил работу предложенного кода.
+* Изменение struct DocumentData требует проверки и изменений всех функций, где мы с ней работаем
+* Но чтобы пока не переделывать, введу новую переменную в состав сервера, может оно и не хуже:
+*/
+    vector<int> document_id_chain_; // содержит ID документов в последовательности их добавления на сервер
 
     set<string> stop_words_;
     map<string, map<int, double>> word_to_document_freqs_;
     map<int, DocumentData> documents_;
-    bool IsStopWord(const string& word) const {
+    bool IsStopWord(const string& word) const 
+    {
         return stop_words_.count(word) > 0;
     }
 
@@ -349,89 +487,119 @@ private:
         return documents_.count(doc_id) > 0;
     }
 
-    vector<string> SplitIntoWordsNoStop(const string& text) const {
+    vector<string> SplitIntoWordsNoStop(const string& text) const 
+    {
         vector<string> words;
-        for (const string& word : SplitIntoWords(text)) {
-            if (!IsStopWord(word)) {
-                words.push_back(word);
+        try {
+            for (const string& word : SplitIntoWords(text)) 
+            {
+                if (!IsStopWord(word)) 
+                {
+                    words.push_back(word);
+                }
             }
+        }
+        catch (invalid_argument& error) {
+            throw invalid_argument("SplitIntoWords : "s + error.what());
         }
         return words;
     }
 
-    static int ComputeAverageRating(const vector<int>& ratings) {
-        if (ratings.empty()) {
+    static int ComputeAverageRating(const vector<int>& ratings) 
+    {
+        if (ratings.empty()) 
+        {
             return 0;
         }
         int rating_sum = 0;
-        for (const int rating : ratings) {
+        for (const int rating : ratings) 
+        {
             rating_sum += rating;
         }
         return rating_sum / static_cast<int>(ratings.size());
     }
 
-    struct QueryWord {
+    struct QueryWord 
+    {
         string data;
         bool is_minus;
         bool is_stop;
     };
 
-    QueryWord ParseQueryWord(string text) const {
+    QueryWord ParseQueryWord(string text) const 
+    {
         bool is_minus = false;
         // Word shouldn't be empty
-        if (text[0] == '-') {
+        if (text[0] == '-') 
+        {
             is_minus = true;
             text = text.substr(1);
         }
         return { text, is_minus, IsStopWord(text) };
     }
-
-    struct Query {
+//  Замечание:    а где проверка на минусы слов запроса
+//  Пояснение:  В функции IsValidWord у меня введена проверка на корректность сочетаний минусов в тексте
+//  поэтому здесь не добавлял никаких проверок. Тесты в тренажёре данное решение прошло. И сам я проверяю.
+    struct Query 
+    {
         set<string> plus_words;
         set<string> minus_words;
     };
 
     Query ParseQuery(const string& text) const {
-        Query query;
-        for (const string& word : SplitIntoWords(text)) {
-            const QueryWord query_word = ParseQueryWord(word);
-            if (!query_word.is_stop) {
-                if (query_word.is_minus) {
-                    query.minus_words.insert(query_word.data);
-                }
-                else {
-                    query.plus_words.insert(query_word.data);
+        try {
+            Query query;
+            for (const string& word : SplitIntoWords(text)) {
+                const QueryWord query_word = ParseQueryWord(word);
+                if (!query_word.is_stop) {
+                    if (query_word.is_minus) {
+                        query.minus_words.insert(query_word.data);
+                    }
+                    else {
+                        query.plus_words.insert(query_word.data);
+                    }
                 }
             }
+            return query;
         }
-        return query;
+        catch (invalid_argument& error) {
+            throw  invalid_argument("SplitIntoWords :: "s + error.what());
+        }
     }
         
-    double ComputeWordInverseDocumentFreq(const string& word) const {
+    double ComputeWordInverseDocumentFreq(const string& word) const 
+    {
         return log(GetDocumentCount() * 1.0 / word_to_document_freqs_.at(word).size());
     }
 
     template <typename Filtr>
     vector<Document> FindAllDocuments(const Query& query, Filtr filtr) const {
         map<int, double> document_to_relevance;
-        for (const string& word : query.plus_words) {
-            if (word_to_document_freqs_.count(word) == 0) {
+        for (const string& word : query.plus_words) 
+        {
+            if (word_to_document_freqs_.count(word) == 0) 
+            {
                 continue;
             }
             const double inverse_document_freq = ComputeWordInverseDocumentFreq(word);
-            for (const auto [document_id, term_freq] : word_to_document_freqs_.at(word)) {
+            for (const auto [document_id, term_freq] : word_to_document_freqs_.at(word)) 
+            {
                 const DocumentData& doc = documents_.at(document_id);
-                if (filtr(document_id, doc.status, doc.rating)) {
+                if (filtr(document_id, doc.status, doc.rating)) 
+                {
                     document_to_relevance[document_id] += term_freq * inverse_document_freq;
                 }
             }
         }
 
-        for (const string& word : query.minus_words) {
-            if (word_to_document_freqs_.count(word) == 0) {
+        for (const string& word : query.minus_words) 
+        {
+            if (word_to_document_freqs_.count(word) == 0) 
+            {
                 continue;
             }
-            for (const auto [document_id, _] : word_to_document_freqs_.at(word)) {
+            for (const auto [document_id, _] : word_to_document_freqs_.at(word)) 
+            {
                 document_to_relevance.erase(document_id);
             }
         }
@@ -444,6 +612,9 @@ private:
     }
 };
 
+// Это было интересно)) Спасибо за рекомендации и замечания! Извиняюсь за много букв. 
+// Хорошо ещё у меня времени нет, эти суббота с воскресением выдались рабочими)))
+
 // --------- Начало модульных тестов поисковой системы -----------
 
 // Тест проверяет, что поисковая система исключает стоп-слова при добавлении документов
@@ -454,7 +625,7 @@ void TestExcludeStopWordsFromAddedDocumentContent() {
     // Сначала убеждаемся, что поиск слова, не входящего в список стоп-слов,
     // находит нужный документ
     {
-        SearchServer server("on"s);
+        SearchServer server(""s);
         server.AddDocument(doc_id, content, DocumentStatus::ACTUAL, ratings);
         const auto found_docs = server.FindTopDocuments("in"s);
         ASSERT_EQUAL(found_docs.size(), 1);
@@ -683,13 +854,28 @@ void TestGetDocumentId()
     search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
     search_server.AddDocument(10, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
     search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
+    vector<int> test_chain = { 0, 30, 10, 20 };
+    // Проверяем каждый ID
+    ASSERT_EQUAL(search_server.GetDocumentCount(), 4);
+    for (int i = 0; i < search_server.GetDocumentCount(); ++i)
+        ASSERT_EQUAL(search_server.GetDocumentId(i), test_chain[i]);
+}
+
+/* пока оставлю старую версию здесь
+void TestGetDocumentId()
+{
+    SearchServer search_server("и в на in the"s);
+    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(10, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
     
     // Проверяем каждый ID
     ASSERT_EQUAL(search_server.GetDocumentCount(), 4);
     for (int i = 0; i < search_server.GetDocumentCount(); ++i)
         ASSERT_EQUAL(search_server.GetDocumentId(i), i * 10);
 }
-
+*/
 //Тест работы исключений
 void TestException()
 {
@@ -699,16 +885,16 @@ void TestException()
         cerr << "Testing invalid stop-words string"<<  " --- TEST FAILED ---"s << endl;
     }
     catch (const invalid_argument& error) 
-    { cerr << "Don't worry. Its just testing: "s << error.what() << " --- TEST OK --- "s << endl; };
+    { cerr << "Don't worry. Its just testing stop-words string: "s << error.what() << " --- TEST OK --- "s << endl; };
 
     try {
         vector<string> stop_words = { "-"s, "\0"s, "--"s };
         SearchServer search_server(stop_words);
-        cerr << "Testing invalid stop-words string" << " --- TEST FAILED --- "s << endl;
+        cerr << "Testing invalid stop-words vector" << " --- TEST FAILED --- "s << endl;
     }
     catch (const invalid_argument& error)
     {
-        cerr << "Don't worry. Its just testing: "s << error.what() <<  " --- TEST OK ---"s << endl;
+        cerr << "Don't worry. Its just testing stop-words vector: "s << error.what() <<  " --- TEST OK ---"s << endl;
     }
 
 
@@ -829,7 +1015,7 @@ void TestException()
         cerr << "Don't worry. Its just testing end minus in MatchDocument: "s 
             << error.what() << " --- TEST OK --- "s << endl;
     }
-
+/*
     //Test negative ID in MatchDocument
     try {
         const auto result = search_server.MatchDocument("белый ошейник"s, -5);
@@ -850,7 +1036,7 @@ void TestException()
     {
         cerr << "Don't worry. Its just testing non existing ID in MatchDocument: "s 
             << error.what() << " --- TEST OK --- "s << endl;
-    }    
+    }    */
 }
 
 template <typename FunctionName>
