@@ -1,8 +1,9 @@
 #include "Request_Queue.h"
+
     // сделаем "обёртки" для всех методов поиска, чтобы сохранять результаты для нашей статистики
     std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, DocumentStatus status)
     {
-        QueryResult qr(NotProcessedQuery, SplitIntoWords(raw_query), status, false);
+        QueryResult qr(NotProcessedQuery, status, false);
         std::vector<Document> result = search_server_.FindTopDocuments(raw_query, status);
         qr.request_result = result.size();
         ProcessingRequest(qr); //
@@ -10,7 +11,7 @@
     }
     std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query)
     {
-        QueryResult qr(NotProcessedQuery, SplitIntoWords(raw_query), DocumentStatus::ACTUAL, false);
+        QueryResult qr(NotProcessedQuery, DocumentStatus::ACTUAL, false);
         std::vector<Document> result = search_server_.FindTopDocuments(raw_query);
         qr.request_result = result.size();
         ProcessingRequest(qr);

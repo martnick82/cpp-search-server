@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+
 static std::vector<std::string> SplitIntoWords(const std::string& text)
 {
     std::vector<std::string> words;

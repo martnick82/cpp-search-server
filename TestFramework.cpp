@@ -1,4 +1,5 @@
 #include "TestFramework.h"
+
 void AssertImpl(bool value, const  std::string& expr_str, const  std::string& file, const  std::string& func, unsigned line,
     const  std::string& hint) 
 {

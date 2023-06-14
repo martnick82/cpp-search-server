@@ -5,6 +5,7 @@
 #include <deque>
 #include <vector>
 #include <string>
+
 class RequestQueue
 {
 public:
@@ -27,11 +28,21 @@ public:
     int GetNoResultRequests() const;
 private:
     struct QueryResult {
-        QueryResult() : request_result(NotProcessedQuery), query({}), status(), is_predicate(false) {}
-        QueryResult(int rr, std::vector<std::string> rq, DocumentStatus st, bool ip)
-            : request_result(rr), query(rq), status(st), is_predicate(ip) {}
+        QueryResult() : request_result(NotProcessedQuery), status(), is_predicate(false) {}
+        QueryResult(int rr, DocumentStatus st, bool ip)
+            : request_result(rr), status(st), is_predicate(ip) {}
         int request_result; // Количество найденных документов
-        std::vector<std::string> query; //Слова запроса
+  //      std::vector<std::string> query; //Слова запроса
+// ЗАМЕЧАНИЕ:    насколько нужны слова запроса ?
+//  Пояснение: не знаю)) так же, как и не знаю насколько нужны status и is_predicate
+// для решения задачи в тренажёре достаточно request_result, причём даже типа bool.
+// Исходил из того, что на данный класс в задании возложена задача сбора статистики,
+// но поскольку мне пока неясны цели анализа статистики, решмл, что сами запросы могут быть важны для анализа,
+// чтобы понять, к примеру, что, в случае большого количества нулевых результатов поиска, 
+// наша база данных документов нерелевантна запросам пользователей. Также учитывал, что запросы хранятся только ограниченное время,
+//  значит ресурсы для хранения истории запросов нужны ограниченные.
+ // А статус в большинстве случаев вообще можно игнорировать, так как он по умолчанию ACTUAL, 
+ // вот в случае is_predicate == true, его значение может быть интересно
         DocumentStatus status; //
         bool is_predicate;     //
     };

@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+
 struct Document
 {
     Document() : id(0), relevance(0.0), rating(0) {}
