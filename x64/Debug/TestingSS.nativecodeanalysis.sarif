@@ -1,0 +1,75 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.36.32532.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///c:/msvs/projects/cpp-search-server/testingss.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "2470b4907c3fc1d263c5c06afcc610a68cdba3c0273fc6cb71ac63b79dae7bf7"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/msvs/projects/cpp-search-server/testingss.h"
+          },
+          "hashes": {
+            "sha-256": "4b6c41bedcb33ef9183f7f38fee56cf2a0f1c4a3cb00c9a8d7b8c5db76bd4f70"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/msvs/projects/cpp-search-server/testframework.h"
+          },
+          "hashes": {
+            "sha-256": "c58dc9ec4fd98fd1427c6087b412376f631653f716e46cc4fc3b874c01c4f1cf"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/msvs/projects/cpp-search-server/searchserver.h"
+          },
+          "hashes": {
+            "sha-256": "6c2cd56df5eb9f3433de07b339f1dec8f8f6119d11b8dc390b24e7c103214330"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/msvs/projects/cpp-search-server/string_processing.h"
+          },
+          "hashes": {
+            "sha-256": "0e25a2ad96ee530d285dc034bab950f68bdeebade8912f51ded952e4a2d723a4"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/msvs/projects/cpp-search-server/document.h"
+          },
+          "hashes": {
+            "sha-256": "a8c1311db50d584ad775b5ba4fb1d40804ebd983368cfd75b0835cbc5d611768"
+          }
+        }
+      ]
+    }
+  ]
+}

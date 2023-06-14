@@ -128,7 +128,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Document.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Paginator.h" />
+    <ClCompile Include="read_input_functions.cpp" />
+    <ClCompile Include="Request_Queue.cpp" />
+    <ClCompile Include="Searchserver.cpp" />
+    <ClCompile Include="TestFramework.cpp" />
+    <ClCompile Include="TestingSS.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Document.h" />
+    <ClInclude Include="read_input_functions.h" />
+    <ClInclude Include="Request_Queue.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SearchServer.h" />
+    <ClInclude Include="String_processing.h" />
+    <ClInclude Include="TestFramework.h" />
+    <ClInclude Include="TestingSS.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

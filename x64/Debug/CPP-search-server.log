@@ -1,22 +1,147 @@
-﻿  main.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\xmemory(154,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\xmemory(164,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\atomic(93,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\atomic(291,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\atomic(307,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
-C:\MSVS\Projects\CPP-search-server\main.cpp(50,12): warning C4820: 'Document': '4' bytes padding added after data member 'Document::id'
-C:\MSVS\Projects\CPP-search-server\main.cpp(52,1): warning C4820: 'Document': '4' bytes padding added after data member 'Document::rating'
-C:\MSVS\Projects\CPP-search-server\main.cpp(174,5): warning C4820: 'SearchServer::QueryWord': '6' bytes padding added after data member 'SearchServer::QueryWord::is_stop'
-C:\MSVS\Projects\CPP-search-server\main.cpp(72,55): warning C5219: implicit conversion from 'unsigned __int64' to 'double', possible loss of data
-C:\MSVS\Projects\CPP-search-server\main.cpp(81,102): warning C4100: 'rating': unreferenced formal parameter
-C:\MSVS\Projects\CPP-search-server\main.cpp(81,58): warning C4100: 'document_id': unreferenced formal parameter
-C:\MSVS\Projects\CPP-search-server\main.cpp(108,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\MSVS\Projects\CPP-search-server\main.cpp(108,1): warning C4365: 'return': conversion from 'unsigned __int64' to 'int', signed/unsigned mismatch
-C:\MSVS\Projects\CPP-search-server\main.cpp(209,84): warning C5219: implicit conversion from 'unsigned __int64' to 'double', possible loss of data
-C:\MSVS\Projects\CPP-search-server\main.cpp(269,162): warning C4100: 'rating': unreferenced formal parameter
-C:\MSVS\Projects\CPP-search-server\main.cpp(269,150): warning C4100: 'status': unreferenced formal parameter
-C:\MSVS\Projects\CPP-search-server\main.cpp(111,43): warning C4514: 'SearchServer::MatchDocument': unreferenced inline function has been removed
-C:\MSVS\Projects\CPP-search-server\main.cpp(102): warning C5045: Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
-C:\MSVS\Projects\CPP-search-server\main.cpp(101): message : index '' range checked by comparison on this line
-C:\MSVS\Projects\CPP-search-server\main.cpp(102): message : feeds call on this line
+﻿  Request_Queue.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\limits.h(70,5): warning C4668: '__STDC_WANT_SECURE_LIB__' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(154,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(164,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(106,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(359,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(375,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\Document.h(11,12): warning C4820: 'Document': '4' bytes padding added after data member 'Document::id'
+C:\MSVS\Projects\CPP-search-server\Document.h(13,1): warning C4820: 'Document': '4' bytes padding added after data member 'Document::rating'
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(102,5): warning C4820: 'SearchServer::QueryWord': '6' bytes padding added after data member 'SearchServer::QueryWord::is_stop'
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(34,34): warning C4820: 'RequestQueue::QueryResult': '4' bytes padding added after data member 'RequestQueue::QueryResult::request_result'
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(37,5): warning C4820: 'RequestQueue::QueryResult': '3' bytes padding added after data member 'RequestQueue::QueryResult::is_predicate'
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(44,1): warning C4626: 'RequestQueue': assignment operator was implicitly defined as deleted
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(44,1): warning C5027: 'RequestQueue': move assignment operator was implicitly defined as deleted
+C:\MSVS\Projects\CPP-search-server\Request_Queue.cpp(7,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\MSVS\Projects\CPP-search-server\Request_Queue.cpp(7,40): warning C4365: '=': conversion from 'unsigned __int64' to 'int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\Request_Queue.cpp(15,40): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\MSVS\Projects\CPP-search-server\Request_Queue.cpp(15,40): warning C4365: '=': conversion from 'unsigned __int64' to 'int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\Document.h(5,5): warning C4514: 'Document::Document': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\Document.h(7,5): warning C4514: 'Document::Document': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(29,5): warning C4514: 'SearchServer::SearchServer': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(78,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(79,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(11,5): warning C4514: 'RequestQueue::RequestQueue': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(30,9): warning C4514: 'RequestQueue::QueryResult::QueryResult': unreferenced inline function has been removed
+  Searchserver.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(154,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(164,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(106,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(359,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(375,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\Document.h(11,12): warning C4820: 'Document': '4' bytes padding added after data member 'Document::id'
+C:\MSVS\Projects\CPP-search-server\Document.h(13,1): warning C4820: 'Document': '4' bytes padding added after data member 'Document::rating'
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(102,5): warning C4820: 'SearchServer::QueryWord': '6' bytes padding added after data member 'SearchServer::QueryWord::is_stop'
+C:\MSVS\Projects\CPP-search-server\Searchserver.cpp(20,55): warning C5219: implicit conversion from 'unsigned __int64' to 'double', possible loss of data
+C:\MSVS\Projects\CPP-search-server\Searchserver.cpp(74,38): warning C4365: 'argument': conversion from 'const int' to 'const unsigned __int64', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\Searchserver.cpp(196,84): warning C5219: implicit conversion from 'unsigned __int64' to 'double', possible loss of data
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(29,5): warning C4514: 'SearchServer::SearchServer': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(78,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+  TestingSS.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\limits.h(70,5): warning C4668: '__STDC_WANT_SECURE_LIB__' is not defined as a preprocessor macro, replacing with '0' for '#if/#elif'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(154,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(164,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(106,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(359,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(375,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\Document.h(11,12): warning C4820: 'Document': '4' bytes padding added after data member 'Document::id'
+C:\MSVS\Projects\CPP-search-server\Document.h(13,1): warning C4820: 'Document': '4' bytes padding added after data member 'Document::rating'
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(102,5): warning C4820: 'SearchServer::QueryWord': '6' bytes padding added after data member 'SearchServer::QueryWord::is_stop'
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(16,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(18,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(25,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(41,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(46,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(48,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(62,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(63,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(64,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(71,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(73,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(90,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(91,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(98,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(99,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(120,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(124,13): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(141,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(144,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(145,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(146,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(147,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(164,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(166,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(172,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(174,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(180,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(182,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(198,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(200,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(205,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(207,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(223,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(226,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(227,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(228,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(229,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(243,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(245,9): warning C4365: 'argument': conversion from 'int' to 'const unsigned __int64', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(245,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(386,21): warning C4189: 'result': local variable is initialized but not referenced
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(396,21): warning C4189: 'result': local variable is initialized but not referenced
+C:\MSVS\Projects\CPP-search-server\TestFramework.h(70,15): warning C4388: '!=': signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(16,9): message : see reference to function template instantiation 'void AssertEqualImpl<unsigned __int64,int>(const T &,const U &,const std::string &,const std::string &,const std::string &,const std::string &,unsigned int,const std::string &)' being compiled
+          with
+          [
+              T=unsigned __int64,
+              U=int
+          ]
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(78,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(79,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+  main.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(154,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(164,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(106,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(359,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(375,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\Document.h(11,12): warning C4820: 'Document': '4' bytes padding added after data member 'Document::id'
+C:\MSVS\Projects\CPP-search-server\Document.h(13,1): warning C4820: 'Document': '4' bytes padding added after data member 'Document::rating'
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(102,5): warning C4820: 'SearchServer::QueryWord': '6' bytes padding added after data member 'SearchServer::QueryWord::is_stop'
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(34,34): warning C4820: 'RequestQueue::QueryResult': '4' bytes padding added after data member 'RequestQueue::QueryResult::request_result'
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(37,5): warning C4820: 'RequestQueue::QueryResult': '3' bytes padding added after data member 'RequestQueue::QueryResult::is_predicate'
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(44,1): warning C4626: 'RequestQueue': assignment operator was implicitly defined as deleted
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(44,1): warning C5027: 'RequestQueue': move assignment operator was implicitly defined as deleted
+C:\MSVS\Projects\CPP-search-server\Document.h(5,5): warning C4514: 'Document::Document': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\Document.h(7,5): warning C4514: 'Document::Document': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(78,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(79,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(30,9): warning C4514: 'RequestQueue::QueryResult::QueryResult': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\Request_Queue.h(31,9): warning C4514: 'RequestQueue::QueryResult::QueryResult': unreferenced inline function has been removed
+  read_input_functions.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(154,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\xmemory(164,5): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(106,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(359,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\include\atomic(375,9): warning C4365: 'argument': conversion from 'long' to 'unsigned int', signed/unsigned mismatch
+C:\MSVS\Projects\CPP-search-server\Document.h(11,12): warning C4820: 'Document': '4' bytes padding added after data member 'Document::id'
+C:\MSVS\Projects\CPP-search-server\Document.h(13,1): warning C4820: 'Document': '4' bytes padding added after data member 'Document::rating'
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(102,5): warning C4820: 'SearchServer::QueryWord': '6' bytes padding added after data member 'SearchServer::QueryWord::is_stop'
+C:\MSVS\Projects\CPP-search-server\Document.h(5,5): warning C4514: 'Document::Document': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\Document.h(7,5): warning C4514: 'Document::Document': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(29,5): warning C4514: 'SearchServer::SearchServer': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(78,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(79,9): warning C4514: 'SearchServer::DocumentData::DocumentData': unreferenced inline function has been removed
+  Generating Code...
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(245): warning C5045: Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(244): message : index 'i' range checked by comparison on this line
+C:\MSVS\Projects\CPP-search-server\TestingSS.cpp(245): message : feeds call on this line
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(63): warning C5045: Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(61): message : index '' range checked by comparison on this line
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(63): message : feeds call on this line
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(63): warning C5045: Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(61): message : index '' range checked by comparison on this line
+C:\MSVS\Projects\CPP-search-server\SearchServer.h(63): message : feeds call on this line
+C:\MSVS\Projects\CPP-search-server\Request_Queue.cpp(48): warning C5045: Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+C:\MSVS\Projects\CPP-search-server\Request_Queue.cpp(46): message : index '' range checked by comparison on this line
+C:\MSVS\Projects\CPP-search-server\Request_Queue.cpp(48): message : feeds call on this line
   CPP-search-server.vcxproj -> C:\MSVS\Projects\CPP-search-server\x64\Debug\CPP-search-server.exe
