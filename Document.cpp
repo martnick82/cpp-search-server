@@ -1,4 +1,4 @@
-#include "Document.h"
+#include "document.h"
 
 // Перегрузка оператора << для вывода значения DocumentStatus в юнит-тестах
 std::ostream& operator<<(std::ostream& os, DocumentStatus status)

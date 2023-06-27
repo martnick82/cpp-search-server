@@ -41,7 +41,7 @@ void TestDocumentSearching()
     ASSERT(search_server.FindTopDocuments("cat"s).empty());
 
     // «атем убеждаемс€,то поиск находит документ         
-    search_server.AddDocument(doc_id, content, DocumentStatus::ACTUAL, ratings);
+    search_server.AddDocument(doc_id, content, DocumentStatus::ACTUAL, ratings);    
     const auto found_docs = search_server.FindTopDocuments("cat"s);
     ASSERT_EQUAL(found_docs.size(), 1);
     const Document& doc0 = found_docs[0];
@@ -230,36 +230,7 @@ void TestRelevanceSearchihgDocuments()
 
 
 }
-//“ест функции возврата ID документа по его пор€дковому номеру
-void TestGetDocumentId()
-{
-    SearchServer search_server("и в на in the"s);
-    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
-    search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
-    search_server.AddDocument(10, "ухоженный пЄс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
-    search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
-    vector<int> test_chain = { 0, 30, 10, 20 };
-    // ѕровер€ем каждый ID
-    ASSERT_EQUAL(search_server.GetDocumentCount(), 4);
-    for (int i = 0; i < search_server.GetDocumentCount(); ++i)
-        ASSERT_EQUAL(search_server.GetDocumentId(i), test_chain.at(i));
-}
 
-/* пока оставлю старую версию здесь
-void TestGetDocumentId()
-{
-    SearchServer search_server("и в на in the"s);
-    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
-    search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
-    search_server.AddDocument(10, "ухоженный пЄс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
-    search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
-
-    // ѕровер€ем каждый ID
-    ASSERT_EQUAL(search_server.GetDocumentCount(), 4);
-    for (int i = 0; i < search_server.GetDocumentCount(); ++i)
-        ASSERT_EQUAL(search_server.GetDocumentId(i), i * 10);
-}
-*/
 //“ест работы исключений
 void TestException()
 {
@@ -321,25 +292,6 @@ void TestException()
         cerr << "Don't worry. Its just testing AddDocument: "s << error.what() << " --- TEST OK --- "s << endl;
     }
 
-    // Test invalid ID in GetDocumentId
-    try {
-        cout << search_server.GetDocumentId(-5);
-        cerr << "Testing negative ID " << " --- TEST FAILED ---"s << endl;
-    }
-    catch (const out_of_range& error)
-    {
-        cerr << "Don't worry. Its just testing GetDocumentId: "s
-            << error.what() << " --- TEST OK --- "s << endl;
-    }
-
-    try {
-        cout << search_server.GetDocumentId(7);
-        cerr << "Testing out of range ID" << " --- TEST FAILED ---"s << endl;
-    }
-    catch (const out_of_range& error)
-    {
-        cerr << "Don't worry. Its just testing GetDocumentId: "s << error.what() << " --- TEST OK --- "s << endl;
-    }
     // Test invalid words in query FindTopDocuments
     try {
         search_server.FindTopDocuments("белый модный \20 ошейник"s);
@@ -401,28 +353,74 @@ void TestException()
         cerr << "Don't worry. Its just testing end minus in MatchDocument: "s
             << error.what() << " --- TEST OK --- "s << endl;
     }
-    /*
-        //Test negative ID in MatchDocument
-        try {
-            const auto result = search_server.MatchDocument("белый ошейник"s, -5);
-            cerr << "Testing negative ID in MatchDocument " << " --- TEST FAILED ---"s << endl;
-        }
-        catch (const invalid_argument& error)
-        {
-            cerr << "Don't worry. Its just testing negative ID in MatchDocument: "s
-                << error.what() << " --- TEST OK --- "s << endl;
-        }
+}
+// тестирование методов begin() и end()
+void TestIterators()
+{
+    SearchServer search_server("и в на in the"s);
+    ASSERT_EQUAL(search_server.end() - search_server.begin(), 0);
+    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(10, "ухоженный пЄс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
+    int num = 0;
+    vector<int> test_vector = { 0, 30, 10, 20 };
+    ASSERT_EQUAL(search_server.end() - search_server.begin(), 4);
+    for (int id : search_server)
+    {
+        ASSERT_EQUAL(id, test_vector.at(num));
+        ++num;
+    }
+    ASSERT_EQUAL(num, 4);
+}
 
-        //Test non existing ID in MatchDocument
-        try {
-            const auto result = search_server.MatchDocument("белый ошейник"s, 55);
-            cerr << "Testing non existing ID in MatchDocument " << " --- TEST FAILED ---"s << endl;
-        }
-        catch (const invalid_argument& error)
-        {
-            cerr << "Don't worry. Its just testing non existing ID in MatchDocument: "s
-                << error.what() << " --- TEST OK --- "s << endl;
-        }    */
+void TestGetWordFrequencies()
+{
+    SearchServer search_server("и в на in the"s);
+    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(10, "ухоженный пЄс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
+    const map <string, double> wfd = search_server.GetWordFrequencies(10);
+    map<string, double> test;
+    test["ухоженный"s] = 1.0 / 4 * log(4 / 2);
+    test["пЄс"s] = 1.0 / 4 * log(4 / 1);
+    test["выразительные"s] = 1.0 / 4 * log(4 / 1);
+    test["глаза"s] = 1.0 / 4 * log(4 / 1);
+    for (auto& [word, tf_idf] : test)
+    {
+        ASSERT_EQUAL(wfd.count(word), 1);
+        ASSERT(std::abs(wfd.at(word) - tf_idf) < 1e-6);
+    }
+}
+
+void TestRemoveDocument()
+{
+    SearchServer search_server("и в на in the"s);
+    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(10, "ухоженный пЄс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
+    search_server.RemoveDocument(20);
+    ASSERT_EQUAL(search_server.GetDocumentCount(), 3);
+    vector<Document> res = search_server.FindTopDocuments("евгений");
+    ASSERT_EQUAL(res.size(), 0);
+}
+//“ест возврата слов по ID документа
+void TestGetWords()
+{
+    SearchServer search_server("и в на in the"s);
+    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(10, "ухоженный пЄс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
+    set<string> test; 
+    test.insert("ухоженный"s);
+    test.insert("пЄс"s);
+    test.insert("выразительные"s);
+    test.insert("глаза"s);
+    set<string> result = search_server.GetWords(10);
+    ASSERT_EQUAL(test, result);
 }
 
 // ‘ункци€ TestSearchServer €вл€етс€ точкой входа дл€ запуска тестов
@@ -436,7 +434,10 @@ void TestSearchServer() {
     RUN_TEST(TestPredicateFunction);
     RUN_TEST(TestSearchingDocumentByStatus);
     RUN_TEST(TestRelevanceSearchihgDocuments);
-    RUN_TEST(TestGetDocumentId);
     RUN_TEST(TestException);
+    RUN_TEST(TestIterators);
+    RUN_TEST(TestGetWordFrequencies);
+    RUN_TEST(TestRemoveDocument);
+    RUN_TEST(TestGetWords);
 }
 // --------- ќкончание модульных тестов поисковой системы -----------

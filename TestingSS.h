@@ -1,8 +1,9 @@
 #pragma once
 #include <iostream>
-#include "TestFramework.h"
-#include "SearchServer.h"
+#include "Test_Framework.h"
+#include "Search_Server.h"
 #include "String_processing.h"
+#include "Log_Duration.h"
 
 void TestExcludeStopWordsFromAddedDocumentContent();
 //Добавление документов. Добавленный документ должен находиться по поисковому запросу, который содержит слова из документа.
@@ -21,19 +22,18 @@ void TestPredicateFunction();
 void TestSearchingDocumentByStatus();
 //Корректное вычисление релевантности найденных документов.
 void TestRelevanceSearchihgDocuments();
-//Тест функции возврата ID документа по его порядковому номеру
-void TestGetDocumentId();
+//Тест функции возврата ID документа по его порядковому номеру. В 6 спринте удалён
+//void TestGetDocumentId();
 //Тест работы исключений
 void TestException();
-
-template <typename FunctionName>
-void RunTestImpl(FunctionName function, const std::string& str_function)
-{
-    function();
-    std::cerr << str_function << " OK" << std::endl;
-}
-
-#define RUN_TEST(func) RunTestImpl(func, #func) //макрос для запуска функций тестирования
-
+//Тест работы методов begin(), end()
+void TestIterators();
+//Тест получения GetWordFrequencies по ID документа
+void TestGetWordFrequencies();
+//Тест удаления документа
+void TestRemoveDocument();
+//Тест возврата слов по ID документа
+void TestGetWords();
 // Функция TestSearchServer является точкой входа для запуска тестов
 void TestSearchServer();
+
