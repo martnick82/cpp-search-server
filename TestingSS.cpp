@@ -1,4 +1,4 @@
-#include "TestingSS.h"
+#include "testingss.h"
 
 // --------- Ќачало модульных тестов поисковой системы -----------
 using namespace std;
@@ -358,20 +358,21 @@ void TestException()
 void TestIterators()
 {
     SearchServer search_server("и в на in the"s);
-    ASSERT_EQUAL(search_server.end() - search_server.begin(), 0);
+    ASSERT_EQUAL(distance(search_server.begin(), search_server.end()), 0);
     search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
     search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
     search_server.AddDocument(10, "ухоженный пЄс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
     search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
     int num = 0;
-    vector<int> test_vector = { 0, 30, 10, 20 };
-    ASSERT_EQUAL(search_server.end() - search_server.begin(), 4);
-    for (int id : search_server)
+    set<int> test_set = { 0, 30, 10, 20 };
+    auto it = search_server.begin();
+    ASSERT_EQUAL(distance(search_server.begin(), search_server.end()), 4);
+    for (int id : test_set)
     {
-        ASSERT_EQUAL(id, test_vector.at(num));
-        ++num;
+        ASSERT_EQUAL(id, *it);
+        ++it;
     }
-    ASSERT_EQUAL(num, 4);
+ //   ASSERT(it == search_server.end());
 }
 
 void TestGetWordFrequencies()
@@ -392,6 +393,16 @@ void TestGetWordFrequencies()
         ASSERT_EQUAL(wfd.count(word), 1);
         ASSERT(std::abs(wfd.at(word) - tf_idf) < 1e-6);
     }
+    //Invalid document ID test
+    cerr << "Exception test in GetWordFrequencies:" << endl;
+    try
+    {
+        const map <string, double> wfd1 = search_server.GetWordFrequencies(5);
+        ASSERT(wfd1.empty());
+    }catch (invalid_argument err)
+    {
+        cerr << " Don't worry. Its just testing invalid ID in GetWordFrequencies: "<< err.what() << "  --- TEST OK--- " << endl;
+    }
 }
 
 void TestRemoveDocument()
@@ -405,22 +416,15 @@ void TestRemoveDocument()
     ASSERT_EQUAL(search_server.GetDocumentCount(), 3);
     vector<Document> res = search_server.FindTopDocuments("евгений");
     ASSERT_EQUAL(res.size(), 0);
-}
-//“ест возврата слов по ID документа
-void TestGetWords()
-{
-    SearchServer search_server("и в на in the"s);
-    search_server.AddDocument(0, "белый кот и красивый модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
-    search_server.AddDocument(30, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
-    search_server.AddDocument(10, "ухоженный пЄс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
-    search_server.AddDocument(20, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
-    set<string> test; 
-    test.insert("ухоженный"s);
-    test.insert("пЄс"s);
-    test.insert("выразительные"s);
-    test.insert("глаза"s);
-    set<string> result = search_server.GetWords(10);
-    ASSERT_EQUAL(test, result);
+    try
+    {       
+        search_server.RemoveDocument(5);
+        cerr << "Exception test in RemoveDocument: " << " --- TEST FAILED ---"s << endl;
+    }
+    catch (invalid_argument err)
+    {
+        cerr << " Don't worry. Its just exception test in RemoveDocument: " << err.what() << "  --- TEST OK--- " << endl;
+    }
 }
 
 // ‘ункци€ TestSearchServer €вл€етс€ точкой входа дл€ запуска тестов
@@ -438,6 +442,5 @@ void TestSearchServer() {
     RUN_TEST(TestIterators);
     RUN_TEST(TestGetWordFrequencies);
     RUN_TEST(TestRemoveDocument);
-    RUN_TEST(TestGetWords);
 }
 // --------- ќкончание модульных тестов поисковой системы -----------

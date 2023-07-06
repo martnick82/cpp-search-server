@@ -1,9 +1,9 @@
 #pragma once
 #include <iostream>
-#include "Test_Framework.h"
-#include "Search_Server.h"
-#include "String_processing.h"
-#include "Log_Duration.h"
+#include "test_framework.h"
+#include "search_server.h"
+#include "string_processing.h"
+#include "log_duration.h"
 
 void TestExcludeStopWordsFromAddedDocumentContent();
 //Добавление документов. Добавленный документ должен находиться по поисковому запросу, который содержит слова из документа.
@@ -32,8 +32,6 @@ void TestIterators();
 void TestGetWordFrequencies();
 //Тест удаления документа
 void TestRemoveDocument();
-//Тест возврата слов по ID документа
-void TestGetWords();
 // Функция TestSearchServer является точкой входа для запуска тестов
 void TestSearchServer();
 

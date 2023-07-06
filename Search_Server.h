@@ -1,11 +1,12 @@
 #pragma once
 #include "string_processing.h"
-#include "Document.h"
+#include "document.h"
 #include <vector>
 #include <map>
 #include <set>
 #include <string>
 #include <algorithm>
+#include <cmath>
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 const double DOUBLE_ACCURACY = 1e-6;
@@ -37,14 +38,12 @@ public:
 
     int GetDocumentCount() const;
 
-    std::set<std::string> GetWords (int document_id);
-
     std::tuple< std::vector< std::string>, DocumentStatus> MatchDocument(const  std::string& raw_query,
         int document_id) const;
 
-    std::vector<int>::iterator begin();
+    std::set<int>::iterator begin();
 
-    std::vector<int>::iterator end();
+    std::set<int>::iterator end();
 
     //метод получения частоты слов по id документа
     const std::map<std::string, double>& GetWordFrequencies(int document_id) const;
@@ -61,11 +60,23 @@ private:
         int rating;
         DocumentStatus status;
     };
-    // спасибо ревьюеру, который заставил меня ввести этот вектор в предыдущем спринте, сейчас он очень пригодился )
-    std::vector<int> document_id_chain_; //содержит ID документов в последовательности их добавления на сервер
+//ЗАМЕЧАНИЕ: std::vector<int> document_id_chain_; //содержит ID документов в последовательности их добавления на сервер
+ //
+ //   теперь стоит сменить тип контейнера на множество, 
+ // потому что хранить в порядке добавления уже не надо, 
+ // удалять из вектора ресурсоемко(надо смещать все записи в памяти)
+ // 
+ // Пояснение: да, всё так :-[
+ // изменил на set. В целом для увеличение скорости поиска, приходится вводить большую избыточность информации
+ // Добавлены новые структуры данных ids_to_sets_words_, word_sets_to_documents_, по сути дублирующие информацию
+ //ЗЫ переделал реализацию без ids_to_sets_words_
+ //
+    std::set<int> document_ids_; //содержит ID документов   
     std::set<std::string> stop_words_; //База стоп-слов
     std::map<std::string, std::map<int, double>> word_to_document_freqs_;  //словарь, где для каждого слова на сервере храниться ID документов, в которых слово встречается и IDF слова для документа
     std::map<int, DocumentData> documents_; //словарь ID документов с информацией о рейтинге и статусе
+ //   std::map<int, std::set<std::string>> ids_to_sets_words_; // ID и набор слов в word_sets_to_documents_
+    std::map<std::set<std::string>, std::set<int>> word_sets_to_documents_;
     
     bool IsStopWord(const  std::string& word) const;
 

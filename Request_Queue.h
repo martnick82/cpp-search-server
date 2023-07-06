@@ -1,7 +1,7 @@
 #pragma once
-#include "Document.h"
-#include "Search_Server.h"
-#include "String_processing.h"
+#include "document.h"
+#include "search_server.h"
+#include "string_processing.h"
 #include <deque>
 #include <vector>
 #include <string>
