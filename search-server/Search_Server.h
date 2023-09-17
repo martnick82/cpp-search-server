@@ -56,17 +56,32 @@ public:
     template <typename Filtr, typename ExecutionPolicy>
     std::vector<Document> FindTopDocuments(ExecutionPolicy&& policy, const  std::string_view raw_query,
         Filtr filtr) const;
-
+  //ОЦЕНКА:  полиси как шаблонный параметр - это отлично!
+  //Пояснение: Я честно списал из примеров на cppreference, по-другому и неудобно реализовывать. 
+  // Правда для прохождения тестов тренажёра приходилось делать дополнительный проверку для последовательной политики,
+  // чтобы отправить в метод без политики.  
+  // 
     //Количество документов на сервере
     int GetDocumentCount() const;
 
+    //РЕКОМЕНДАЦИЯ: длинное именование возвращаемого типа, можно переименовать через алиас
+    // Пояснение: Исправил. Надеюсь, что правильно понял.
+    using matched_document = std::tuple< std::vector< std::string_view>, DocumentStatus>;
+
     //Матчинг документов
-    std::tuple< std::vector< std::string_view>, DocumentStatus> MatchDocument(const  std::string_view raw_query,
+    matched_document MatchDocument(const  std::string_view raw_query,
         int document_id) const;
     //Матчинг документов с политиками параллельных вычислений
+    //РЕКОМЕНДАЦИЯ: здесь можно было бы три метода оставить, так как по сути работа одного 
+    //переадресовывается на другой + одна реализация параллельной версии
+    // Пояснение: НЕ понял про три метода, у меня MatchDocument два было.
+    // Или речь о том, что можно для execution::seq сделать свой вариант перезагрузки и отправить в метод без политики?
+    // 
+    // В таком варианте, как у меня, я сравнивал времена для трёх случаев в тестах, очень познавательно. 
+    // Видно когда execution::par  не даёт увеличение быстродействия, или когда состояние гонки всё портит
+    //
     template <typename ExecutionPolicy>
-    std::tuple<std::vector<std::string_view>, DocumentStatus> 
-        MatchDocument(ExecutionPolicy&& policy, const  std::string_view raw_query, int document_id) const;
+    matched_document MatchDocument(ExecutionPolicy&& policy, const  std::string_view raw_query, int document_id) const;
 
     using Iterator = std::set<int>::iterator;
     std::set<int>::iterator begin();
@@ -87,20 +102,49 @@ public:
 private:
     struct DocumentData
     {
-        DocumentData() : rating(0), status(DocumentStatus::ACTUAL) {};
+        
+        DocumentData() : rating(0), status(DocumentStatus::ACTUAL), data() {}
         DocumentData(int rate, DocumentStatus status)
-            : rating(rate), status(status) {};
-        int rating;
+            : rating(rate), status(status) {}
+        DocumentData(int rate, DocumentStatus status = DocumentStatus::ACTUAL, std:: string text = ""s)
+            : rating(rate), status(status), data(text) {}
+        int rating;        
         DocumentStatus status;
+        std::string data;
     };
-    std::deque<std::string> storage_;// хранилище документов
-    std::set<int> document_ids_; //содержит ID документов   
-    std::set<std::string, std::less<>> stop_words_; //База стоп-слов
-    std::map<std::string_view, std::map<int, double>> word_to_document_freqs_;  //словарь, где для каждого слова на сервере храниться ID документов, в которых слово встречается и IDF слова для документа
-    std::map<int, DocumentData> documents_; //словарь ID документов с информацией о рейтинге и статусе
-    std::map<std::vector<std::string_view>, std::vector<int>> word_sets_to_documents_; //набор слов к набору документов
-    std::map<int, std::vector<std::string_view>> documents_to_word_sets_; // ID документов - набор слов
-    
+
+    // хранилище документов
+   // std::deque<std::string> storage_;
+
+    //содержит ID документов   
+    std::set<int> document_ids_; 
+
+    //База стоп-слов
+    std::set<std::string, std::less<>> stop_words_;
+
+    //словарь, где для каждого слова на сервере храниться ID документов, 
+    //в которых слово встречается и IDF слова для документа
+    std::map<std::string_view, std::map<int, double>> word_to_document_freqs_;  
+
+    //словарь ID документов с информацией о рейтинге и статусе
+    std::map<int, DocumentData> documents_; 
+
+    //набор слов к набору документов
+    //std::map<std::vector<std::string_view>, std::vector<int>> word_sets_to_documents_;
+    //ЗАМЕЧАНИЕ: можно проще сделать - добавить еще одно поле в структуру DocumentData, 
+    // где хранить всю строку контента документа в формате стринг
+    // ПОЯСНЕНИЕ: Исправил. Тогда и storage_ можно тоже удалить, что я и сделал. 
+    // Согласен, что такая структура данных более логична. storage_ вводил уже с подсказки наставников в пачке, 
+    // так как очень долго провозился с этим спринтом иногда думал мало. 
+    // 
+    // ID документов - набор слов
+    std::map<int, std::vector<std::string_view>> documents_to_word_sets_; 
+
+    //РЕКОМЕНДАЦИЯ: не рекомендуется размещать комментарии в конце строки(это слишком удлиняет длину строки).
+    //идеал - размещать перед строкой с кодом, а еще перед строкой с комментарием добавлять пустую строку
+    // Пояснение: Исправил. Некоторые комментарии излишни, и так ясно, что в переменной будет лежать, 
+    // но решил описывать все, чтобы никому обидно не было
+    //
     bool IsStopWord(const  std::string_view word) const;
 
     bool IsDocumentID(const int document_id) const;
@@ -124,11 +168,18 @@ private:
     };
 
     //Парсинг запросов
-    Query ParseQuery(const std::string_view text) const;
+    //Query ParseQuery(const std::string_view text) const;
     //Парсинг запросов с политиками параллельных вычислений
-    template <typename ExecutionPolicy>
-    Query ParseQuery(ExecutionPolicy&& policy, const std::string_view text) const;
-
+    //template <typename ExecutionPolicy>
+    Query ParseQuery(const std::string_view text, bool sequence = true) const;
+    //ЗАМЕЧАНИЕ: достаточно одного метода парсинга запроса, для регулирования обработки 
+    // добавьте вторым параметром bool - переменную.При чем, если вы назначите 
+    // этой переменной значение по умолчанию, то будет возможность взывать этот метод 
+    // как с одним, тк и с двумя параметрами
+    // ПОЯСНЕНИЕ: Исправил. Мне осталось непонятным только чем в данном случае лучше одна версия.
+    //  что за критерий можно использовать при выборе способа вызова методов? 
+    // Передавать шаблонный policy мне кажется удобнее и понятнее
+    // 
     //Вычисление IDF слова
     double ComputeWordInverseDocumentFreq(const std::string_view word) const;
 
@@ -192,7 +243,7 @@ template <typename Filtr, typename ExecutionPolicy>
 std::vector<Document> SearchServer::FindTopDocuments(ExecutionPolicy&& policy, const  std::string_view raw_query,
     Filtr filtr) const
 {
-    Query query = ParseQuery(policy, raw_query);
+    Query query = ParseQuery(raw_query, 0);
     auto matched_documents = FindAllDocuments(policy, query, filtr);
     sort(policy, matched_documents.begin(), matched_documents.end(),
         [](const Document& lhs, const Document& rhs)
@@ -328,7 +379,7 @@ void SearchServer::RemoveDocument(ExecutionPolicy&& policy, int document_id)
         });
     document_ids_.erase(document_id);
     documents_.erase(document_id);
-    std::vector<int>& docs = word_sets_to_documents_.at(document_words);
+ /*   std::vector<int>& docs = word_sets_to_documents_.at(document_words);
     auto it = lower_bound(docs.begin(), docs.end(), document_id);
     if (it != docs.end())
     {
@@ -337,7 +388,7 @@ void SearchServer::RemoveDocument(ExecutionPolicy&& policy, int document_id)
     if (docs.empty())
     {
         word_sets_to_documents_.erase(document_words);
-    }
+    }*/
     documents_to_word_sets_.erase(document_id);
 }
 
@@ -347,7 +398,7 @@ SearchServer::MatchDocument(ExecutionPolicy&& policy, const  std::string_view ra
 {
     using namespace std::literals;
 
-    Query query = ParseQuery(std::execution::seq, raw_query);
+    Query query = ParseQuery(raw_query, false);
     const std::vector<std::string_view> document_words = documents_to_word_sets_.at(document_id);
     std::vector<std::string_view> matched_words;
     bool is_minus_word = false;
@@ -387,35 +438,4 @@ SearchServer::MatchDocument(ExecutionPolicy&& policy, const  std::string_view ra
         }
     }
     return tie(matched_words, documents_.at(document_id).status);
-}
-
-template <typename ExecutionPolicy>
-SearchServer::Query SearchServer::ParseQuery(ExecutionPolicy&& policy, const std::string_view text) const 
-{
-    using namespace std::string_literals;
-
-    Query query;
-    std::vector<std::string_view> query_vector = SplitIntoWords(text);
-    sort(policy, query_vector.begin(), query_vector.end());
-    query_vector.erase(
-        unique(query_vector.begin(), query_vector.end()), query_vector.end());
-    std::vector<std::string_view>::iterator it = std::lower_bound(query_vector.begin(), query_vector.end(), "-"s,
-        [](const std::string_view word, const std::string_view val)
-        { return word.at(0) == val.at(0); });
-    if (it == query_vector.end())
-    {
-        std::swap(query.plus_words, query_vector);
-    }
-    else
-    {
-        query.plus_words = std::move(std::vector(it, query_vector.end()));
-        query.minus_words = std::move(std::vector(query_vector.begin(), it));
-    }
-    std::for_each(policy,
-        query.minus_words.begin(), query.minus_words.end(),
-        [](std::string_view& word)
-        {
-            word = word.substr(1);
-        });   
-    return query;
 }
