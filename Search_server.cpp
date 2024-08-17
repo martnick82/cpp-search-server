@@ -1,6 +1,6 @@
 #include "search_server.h"
 
-//    -------------------- Реализация SearchServer --------------------
+//    -------------------- ГђГҐГ Г«ГЁГ§Г Г¶ГЁГї SearchServer --------------------
 
 using namespace std;
 
@@ -29,7 +29,6 @@ void SearchServer::AddDocument(int document_id, const std::string& document, Doc
         key_words.insert(word);
     }
     word_sets_to_documents_[key_words].insert(document_id);
- //   ids_to_sets_words_[document_id] = key_words;
     documents_.emplace(document_id, DocumentData(ComputeAverageRating(ratings), status));
     document_ids_.insert(document_id);
 }
@@ -154,13 +153,6 @@ SearchServer::QueryWord SearchServer::ParseQueryWord(std::string text) const
         (text[0] == '-' && text.size() == 1)) ||
         (text[0] == '-' && text[1] == '-') ||
         (text.back() == '-'))
-
-//  УТОЧНЕНИЕ:       (text[text.size() - 1] == '-'))
-//
-//      text[text.size() - 1] аналогично text.back()
-// 
-// Пояснение: Спасибо, нужно будет запомнить.
-// 
     {
         throw invalid_argument("Invalid query word"s);
     }
@@ -209,7 +201,7 @@ set<int>::iterator SearchServer::end()
 {
     return document_ids_.end();
 }
-//метод получения частот слов по id документа
+//Г¬ГҐГІГ®Г¤ ГЇГ®Г«ГіГ·ГҐГ­ГЁГї Г·Г Г±ГІГ®ГІ Г±Г«Г®Гў ГЇГ® id Г¤Г®ГЄГіГ¬ГҐГ­ГІГ 
 const std::map<std::string, double>& SearchServer::GetWordFrequencies(int document_id) const
 {
     std::map<std::string, double>* words_frequencies_in_document = new map<std::string, double>();
@@ -234,21 +226,6 @@ void SearchServer::RemoveDocument(int document_id)
 {
     try
     {
-        // ЗАМЕЧАНИЕ:   documents_.erase(
-         //     find_if(documents_.begin(), documents_.end(),
-         //         [document_id](pair<int, SearchServer::DocumentData> data)
-         //         { return document_id == data.first; }));
-         //   из словаря удаление просто по ключу
-         // 
-         // Пояснение: Тут даже не знаю, что и сказать. Это же нужно было такое изобразить! :-[
-        //
-         // ЗАМЕЧАНИЕ:  for (auto& [word, documents] : word_to_document_freqs_)
-        //
-        // здесь не слишком эффективно - проход по всем словам, что есть в документе, 
-        // достаточно пройтись по словам удаляемого документа(новый метод вам пригодится для этого)
-        // 
-        // Пояснение: :-[
-        // 
         set<string> key_words;
         {
             const map<string, double> words_relevance = GetWordFrequencies(document_id); //Logarithmic in the size of the container. LogN
