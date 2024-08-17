@@ -45,10 +45,10 @@ public:
 
     std::set<int>::iterator end();
 
-    //метод получения частоты слов по id документа
+    //Г¬ГҐГІГ®Г¤ ГЇГ®Г«ГіГ·ГҐГ­ГЁГї Г·Г Г±ГІГ®ГІГ» Г±Г«Г®Гў ГЇГ® id Г¤Г®ГЄГіГ¬ГҐГ­ГІГ 
     const std::map<std::string, double>& GetWordFrequencies(int document_id) const;
 
-    //удаление документа по ID
+    //ГіГ¤Г Г«ГҐГ­ГЁГҐ Г¤Г®ГЄГіГ¬ГҐГ­ГІГ  ГЇГ® ID
     void RemoveDocument(int document_id);
 
 private:
@@ -60,22 +60,11 @@ private:
         int rating;
         DocumentStatus status;
     };
-//ЗАМЕЧАНИЕ: std::vector<int> document_id_chain_; //содержит ID документов в последовательности их добавления на сервер
- //
- //   теперь стоит сменить тип контейнера на множество, 
- // потому что хранить в порядке добавления уже не надо, 
- // удалять из вектора ресурсоемко(надо смещать все записи в памяти)
- // 
- // Пояснение: да, всё так :-[
- // изменил на set. В целом для увеличение скорости поиска, приходится вводить большую избыточность информации
- // Добавлены новые структуры данных ids_to_sets_words_, word_sets_to_documents_, по сути дублирующие информацию
- //ЗЫ переделал реализацию без ids_to_sets_words_
- //
-    std::set<int> document_ids_; //содержит ID документов   
-    std::set<std::string> stop_words_; //База стоп-слов
-    std::map<std::string, std::map<int, double>> word_to_document_freqs_;  //словарь, где для каждого слова на сервере храниться ID документов, в которых слово встречается и IDF слова для документа
-    std::map<int, DocumentData> documents_; //словарь ID документов с информацией о рейтинге и статусе
- //   std::map<int, std::set<std::string>> ids_to_sets_words_; // ID и набор слов в word_sets_to_documents_
+
+    std::set<int> document_ids_; //Г±Г®Г¤ГҐГ°Г¦ГЁГІ ID Г¤Г®ГЄГіГ¬ГҐГ­ГІГ®Гў   
+    std::set<std::string> stop_words_; //ГЃГ Г§Г  Г±ГІГ®ГЇ-Г±Г«Г®Гў
+    std::map<std::string, std::map<int, double>> word_to_document_freqs_;  //Г±Г«Г®ГўГ Г°Гј, ГЈГ¤ГҐ Г¤Г«Гї ГЄГ Г¦Г¤Г®ГЈГ® Г±Г«Г®ГўГ  Г­Г  Г±ГҐГ°ГўГҐГ°ГҐ ГµГ°Г Г­ГЁГІГјГ±Гї ID Г¤Г®ГЄГіГ¬ГҐГ­ГІГ®Гў, Гў ГЄГ®ГІГ®Г°Г»Гµ Г±Г«Г®ГўГ® ГўГ±ГІГ°ГҐГ·Г ГҐГІГ±Гї ГЁ IDF Г±Г«Г®ГўГ  Г¤Г«Гї Г¤Г®ГЄГіГ¬ГҐГ­ГІГ 
+    std::map<int, DocumentData> documents_; //Г±Г«Г®ГўГ Г°Гј ID Г¤Г®ГЄГіГ¬ГҐГ­ГІГ®Гў Г± ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГҐГ© Г® Г°ГҐГ©ГІГЁГ­ГЈГҐ ГЁ Г±ГІГ ГІГіГ±ГҐ
     std::map<std::set<std::string>, std::set<int>> word_sets_to_documents_;
     
     bool IsStopWord(const  std::string& word) const;
